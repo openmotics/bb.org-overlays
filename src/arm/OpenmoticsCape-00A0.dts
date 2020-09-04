@@ -1,0 +1,180 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/board/am335x-bbw-bbb-base.h>
+#include <dt-bindings/pinctrl/am33xx.h>
+
+/ {
+	compatible = "ti,beaglebone", "ti,beaglebone-black", "ti,beaglebone-green";
+
+	// identification
+	part-number = "BB-OPENMOTICS";
+	version = "00A0";
+
+	// resources this cape uses
+	exclusive-use =
+		"P9.11",		// uart4_rxd
+		"P9.13",		// uart4_txd
+		"P8.33",		// uart4_de/re
+		"P9.17",		// i2c1_scl
+		"P9.18",		// i2c1_scl
+		"P9.19",		// i2c2_scl
+		"P9.20",		// i2c2_scl
+		"P9.21",		// uart2_txd
+		"P9.22",		// uart2_rxd
+		"P9.24",		// uart1_txd
+		"P9.26",		// uart1_rxd
+		"P8.31",		// uart5_ctsn
+		"P8.32",		// uart5_rtsn
+		"P8.37",		// uart5_txd
+		"P8.38",		// uart5_rxd
+
+		"gpio0_9",
+
+		"i2c1",			// hardware ip used
+		"i2c2",			// hardware ip used
+		"uart1",		// hardware ip used
+		"uart2",		// hardware ip used
+		"uart4",		// hardware ip used
+		"uart5";		// hardware ip used
+
+	/*
+	 * Free up the pins used by the cape from the pinmux helpers.
+	 */
+	fragment@0 {
+		target = <&ocp>;
+		__overlay__ {
+			P9_13_pinmux { status = "disabled"; };	/* P9_13: gpmc_wpn.uart4_txd_mux2 */
+			P9_11_pinmux { status = "disabled"; };	/* P9_11: gpmc_wait0.uart4_rxd_mux2 */
+			P8_31_pinmux { status = "disabled"; };  /* P8.31: lcd_data14 */
+			P8_32_pinmux { status = "disabled"; };  /* P8.32: lcd_data15 */
+			P8_33_pinmux { status = "disabled"; };	/* P9_27: PIN_OUTPUT_PULLDOWN | MUX_MODE7 (GPIO3_19) */
+			P9_17_pinmux { status = "disabled"; };  /* i2c1_scl */
+			P9_18_pinmux { status = "disabled"; };  /* i2c1_sda */
+			P9_19_pinmux { status = "disabled"; };  /* i2c2_scl */
+			P9_20_pinmux { status = "disabled"; };  /* i2c2_sda */
+			P9_21_pinmux { status = "disabled"; };  /* P9_21: spi0_d0.uart2_txd */
+			P9_22_pinmux { status = "disabled"; };  /* P9_22: spi0_sclk.uart2_rxd */
+			P9_24_pinmux { status = "disabled"; };  /* uart1_txd */
+			P9_26_pinmux { status = "disabled"; };  /* uart1_rxd */
+			P8_37_pinmux { status = "disabled"; };  /* uart5_txd */
+			P8_38_pinmux { status = "disabled"; };  /* uart5_rxd */
+		};
+	};
+
+	fragment@1 {
+		target = <&am33xx_pinmux>;
+		__overlay__ {
+
+			openmotics_uart1_pins: pinmux_openmotics_uart1_pins {
+				pinctrl-single,pins = <
+					BONE_P9_24 (PIN_OUTPUT | MUX_MODE0)	      /* uart1_txd */
+					BONE_P9_26 (PIN_INPUT | MUX_MODE0)	      /* uart1_rxd */
+				>;
+			};
+
+			openmotics_uart2_pins: pinmux_openmotics_uart2_pins {
+				pinctrl-single,pins = <
+					BONE_P9_21 (PIN_OUTPUT | MUX_MODE1)	      /* P9_21: spi0_d0.uart2_txd */
+					BONE_P9_22 (PIN_INPUT | MUX_MODE1)	      /* P9_22: spi0_sclk.uart2_rxd */
+				>;
+			};
+
+			openmotics_uart5_pins: pinmux_openmotics_uart5_pins {
+				pinctrl-single,pins = <
+					BONE_P8_31 (PIN_INPUT | MUX_MODE4)	      /* lcd_data14.uart5_cts */
+					BONE_P8_32 (PIN_OUTPUT | MUX_MODE6)	      /* lcd_data15.uart5_rts */
+					BONE_P8_37 (PIN_OUTPUT | MUX_MODE4)	      /* lcd_data8.uart5_txd */
+					BONE_P8_38 (PIN_INPUT | MUX_MODE4)	      /* lcd_data9.uart5_rxd */
+				>;
+			};
+
+			openmotics_rs485_pins: pinmux_openmotics_rs485_pins {
+				pinctrl-single,pins = <
+					BONE_P9_13 (PIN_OUTPUT | MUX_MODE6)	/* P9_13: gpmc_wpn.uart4_txd_mux2 */
+					BONE_P9_11 (PIN_INPUT  | MUX_MODE6)	/* P9_11: gpmc_wait0.uart4_rxd_mux2 */
+					BONE_P8_33 0x7				/* P9_27: PIN_OUTPUT_PULLDOWN | MUX_MODE7 (GPIO3_19) */
+				>;
+			};
+
+			openmotics_i2c1_pins: pinmux_openmotics_i2c1_pins {
+				pinctrl-single,pins = <
+					BONE_P9_17 0x72	      /* P9_17: i2c1_scl, SLEWCTRL_SLOW | INPUT_PULLUP | MODE2 */
+					BONE_P9_18 0x72	      /* P9_18: i2c1_sda, SLEWCTRL_SLOW | INPUT_PULLUP | MODE2 */
+				>;
+			};
+
+			openmotics_i2c2_pins: pinmux_openmotics_i2c2_pins {
+				pinctrl-single,pins = <
+					BONE_P9_19 0x73	      /* P9_19: i2c2_scl, SLEWCTRL_SLOW | INPUT_PULLUP | MODE3 */
+					BONE_P9_20 0x73	      /* P9_20: i2c2_sda, SLEWCTRL_SLOW | INPUT_PULLUP | MODE3 */
+				>;
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <&uart1>;
+		__overlay__ {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&openmotics_uart1_pins>;
+		};
+	};
+
+	fragment@3 {
+		target = <&uart2>;
+		__overlay__ {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&openmotics_uart2_pins>;
+		};
+	};
+
+	fragment@4 {
+		target = <&uart5>;
+		__overlay__ {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&openmotics_uart5_pins>;
+		};
+	};
+
+	fragment@5 {
+		target = <&uart4>;
+		__overlay__ {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&openmotics_rs485_pins>;
+			rs485-rts-delay = <0x0 0x0>;
+
+			rts-gpio = <&gpio0 0x9 0x1>; /*  GPIO_ACTIVE_HIGH>; */
+			rs485-rts-active-high;
+			linux,rs485-enabled-at-boot-time;
+		};
+	};
+
+	fragment@6 {
+		target = <&i2c1>;
+		__overlay__ {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&openmotics_i2c1_pins>;
+			clock-frequency = <0x186a0>;
+			#address-cells = <0x1>;
+			#size-cells = <0x0>;
+		};
+	};
+
+	fragment@7 {
+		target = <&i2c2>;
+		__overlay__ {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&openmotics_i2c2_pins>;
+			clock-frequency = <0x186a0>;
+			#address-cells = <0x1>;
+			#size-cells = <0x0>;
+		};
+	};
+};
