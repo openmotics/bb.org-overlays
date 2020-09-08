@@ -40,7 +40,11 @@
 
 		"P9.19",		// i2c2_scl
 		"P9.20",		// i2c2_scl
-		"i2c2";			// hardware ip used
+		"i2c2",			// hardware ip used
+
+		"P9_12",  /* P9_12: power_master (GPIO1_18) */
+		// "P9_25",  /* P9_25: reset_external_board (GPIO3_21) */
+		"P8_40";  /* P8_40: uart5_mode_select (GPIO2_13) */
 
 	/*
 	 * Free up the pins used by the cape from the pinmux helpers.
@@ -67,6 +71,9 @@
 
 			P9_19_pinmux { status = "disabled"; };  /* i2c2_scl */
 			P9_20_pinmux { status = "disabled"; };  /* i2c2_sda */
+
+			P9_12_pinmux { status = "disabled"; };  /* P9_12: power_master (GPIO1_18) */
+			P8_40_pinmux { status = "disabled"; };  /* P8_40: uart5_mode_select (GPIO2_13) */
 		};
 	};
 
@@ -198,6 +205,30 @@
 			clock-frequency = <0x186a0>;
 			#address-cells = <0x1>;
 			#size-cells = <0x0>;
+		};
+	};
+
+	fragment@8 {
+		target = <&gpio1>;
+		__overlay__ {
+			power_master {
+				gpio-hog;
+				gpios = <18 GPIO_ACTIVE_HIGH>;
+				output-high;
+				line-name = "power_master";
+			};
+		};
+	};
+
+	fragment@9 {
+		target = <&gpio2>;
+		__overlay__ {
+			uart5_mode_select {
+				gpio-hog;
+				gpios = <13 GPIO_ACTIVE_HIGH>;
+				output-low;
+				line-name = "uart5_mode_select";
+			};
 		};
 	};
 };
