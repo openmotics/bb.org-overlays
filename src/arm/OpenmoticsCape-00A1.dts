@@ -10,7 +10,7 @@
 
 	// identification
 	part-number = "BB-OPENMOTICS";
-	version = "00A0";
+	version = "00A1";
 
 	// resources this cape uses
 	exclusive-use =
@@ -178,7 +178,7 @@
 			pinctrl-0 = <&openmotics_uart5_pins>;
 			rs485-rts-delay = <0x0 0x0>;
 
-			rts-gpio = <&gpio0 11 0x0>;  /* P8_32: GPIO0_11 GPIO_ACTIVE_HIGH */
+			rts-gpio = <&gpio0 11 0x0>;  /* P8_32: GPIO0_11 GPIO_ACTIVE_LOW */
 			rs485-rts-active-low;
 			linux,rs485-enabled-at-boot-time;
 		};
